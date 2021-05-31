@@ -1,0 +1,19 @@
+<%- include('header') %>
+
+<form>
+    <select id="select" name="currencyExchange">
+            <option value='' selected disabled>Select Currency</option>
+            <option value="brlusd">BRL to USD</option>
+            <option value="usdbrl">UDS to BRL</option>
+    </select>
+    <!-- <div>
+        <button type="button">Start</button>
+    </div> -->
+</form>
+
+<div class="exchangeFormDiv"></div>
+<script type="module" src="/eventListener.js"></script>
+</body>
+
+<%- include('footer') %>
+

@@ -1,0 +1,32 @@
+<%- include('header') %>
+
+<div class="result">
+
+    <% if(error){ %>
+        <%= error %>
+        
+    <% } else if(currencyExchange === 'brlusd') { %>
+        <div>
+            Exchange Rate: <%= exchangeRate %>  BRL/USD
+        </div>
+        <div>
+            Brazilian Reais: <%= amount %>
+        </div>
+        <div>
+            Dollars: <%= dollars %>
+        </div>       
+    
+    <% } else if(currencyExchange === 'usdbrl') { %>
+        <div>
+            Exchange Rate: <%= exchangeRate %>  BRL/USD
+        </div>
+        <div>
+            Dollars: <%= amount %>
+        </div>
+        <div>
+            Brazilian Reais: <%= reais %>
+        </div>
+    <% } %>
+</div>
+
+<%- include('footer') %>
