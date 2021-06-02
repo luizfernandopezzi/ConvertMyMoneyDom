@@ -33,7 +33,7 @@
 
         async function extractExchange(dropdownIndex){
             const data = await getExchangeApiFetch()
-            const extractExc = ''
+            let extractExc = ''
             if(JSON.parse(data).value[0]){
             extractExc = JSON.parse(data).value[0].cotacaoVenda
             }else{
