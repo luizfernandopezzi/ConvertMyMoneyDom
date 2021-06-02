@@ -31,16 +31,22 @@
             return await response.text()
         }
 
-        async function extractExchange(dropdownIndex,send){
+        async function extractExchange(dropdownIndex){
             const data = await getExchangeApiFetch()
-            const extractExc = JSON.parse(data).value[0].cotacaoVenda
+            const extractExc = ''
+            if(JSON.parse(data).value[0]){
+            extractExc = JSON.parse(data).value[0].cotacaoVenda
+            }else{
+            alert('Market is closed! Real time exchange rate is not available.')
             console.log(extractExc)
+            console.log(JSON.parse(data).value[0])
+            }
 
             const formBrlUsd = `
             <form class="exchangeForm" method="GET" action="/exchange">
             <div>
                 <label>Exchange Rate</label>
-                <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
+                <input name="exchangeRate" type="number" step="any" inputmode="numeric" placeholder="BRL/USD" value="${extractExc}">
             </div>
             <div>
                 <label>Amount</label>
@@ -56,7 +62,7 @@
             <form class="exchangeForm" method="GET" action="/exchange">
                 <div>
                     <label>Exchange Rate</label>
-                    <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
+                    <input name="exchangeRate" type="number" step="any" inputmode="numeric" placeholder="BRL/USD" value="${extractExc}">
                 </div>
                 <div>
                     <label>Amount</label>

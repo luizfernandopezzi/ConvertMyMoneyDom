@@ -13,7 +13,7 @@
 //     }    
 // }
 
-const getUrl = (date) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${date}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao` 
+const getUrl = (date) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${date}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`
 
 const getToday = () => {
     const today = new Date()
@@ -26,17 +26,23 @@ async function getExchangeApiFetch(){
     return await response.text()
 }
 
-async function extractExchange(dropdownIndex,send){
+async function extractExchange(dropdownIndex){
     const data = await getExchangeApiFetch()
-    const extractExc = JSON.parse(data).value[0].cotacaoVenda
+    const extractExc = ''
+    if(JSON.parse(data).value[0]){
+    extractExc = JSON.parse(data).value[0].cotacaoVenda
+    }else{
+    alert('Market is closed! Real time exchange rate is not available.')
     console.log(extractExc)
-   
+    console.log(JSON.parse(data).value[0])
+    }
+
     const formBrlUsd = `
     <form class="exchangeForm" method="GET" action="/exchange">
     <div>
         <label>Exchange Rate</label>
-        <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
-    </div>   
+        <input name="exchangeRate" type="number" step="any" inputmode="numeric" placeholder="BRL/USD" value="${extractExc}">
+    </div>
     <div>
         <label>Amount</label>
         <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="R$ 0,00">
@@ -51,8 +57,8 @@ async function extractExchange(dropdownIndex,send){
     <form class="exchangeForm" method="GET" action="/exchange">
         <div>
             <label>Exchange Rate</label>
-            <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
-        </div>   
+            <input name="exchangeRate" type="number" step="any" inputmode="numeric" placeholder="BRL/USD" value="${extractExc}">
+        </div>
         <div>
             <label>Amount</label>
             <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="USD 0.00">
@@ -62,7 +68,7 @@ async function extractExchange(dropdownIndex,send){
         </div>
     </form>
     `
-    const exchangeForm = document.querySelector('.exchangeFormDiv') 
+    const exchangeForm = document.querySelector('.exchangeFormDiv')
     if(dropdownIndex === 1){
         exchangeForm.innerHTML = formBrlUsd
     }
@@ -71,7 +77,7 @@ async function extractExchange(dropdownIndex,send){
     }
 }
 
-const args = {
+const argsBRL = {
     prefix: 'R$ ',
     fixed: true,
     fractionDigits: 2,
@@ -100,7 +106,6 @@ const eventListener = dropdown.addEventListener('change', (event)=>{
             await extractExchange(dropdown.selectedIndex)
             const input = document.querySelector('#amount')
             const simpleMask = SimpleMaskMoney.setMask(input, argsBRL)
-            const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
         }
         extract()
     }
@@ -109,7 +114,6 @@ const eventListener = dropdown.addEventListener('change', (event)=>{
             await extractExchange(dropdown.selectedIndex)
             const input = document.querySelector('#amount')
             const simpleMask = SimpleMaskMoney.setMask(input, argsUSD)
-            const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
         }
         extract()
     }

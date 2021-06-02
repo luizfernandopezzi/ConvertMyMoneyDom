@@ -3,7 +3,6 @@ const ejs = require('ejs')
 const path = require('path')
 const convert = require('./lib/convert')
 const SimpleMaskMoney = require('simple-mask-money')
-const simpleMaskMoney = require('simple-mask-money')
 
 const app = express()
 
@@ -18,10 +17,23 @@ app.get('/', (req,res)=>{
 app.get('/exchange', (req,res)=>{
     const { exchangeRate, amount, currencyExchange } = req.query
     console.log(req.query)
+    console.log('Amount', amount)
+    
     const amountNumber = SimpleMaskMoney.formatToNumber(amount)
-    const amountNumberUSD = amountNumber*1000
-    console.log(amountNumber)
-    console.log(amountNumberUSD)
+    console.log('Amount Number', amountNumber)
+    
+    const argsUSD = {
+        prefix: '$ ',
+        fixed: true,
+        fractionDigits: 2,
+        decimalSeparator: '.',
+        thousandsSeparator: ',',
+        cursor: 'end'
+    }
+    const amountNumberUSD = SimpleMaskMoney.formatToNumber(amount,argsUSD)
+    console.log('AmountUSD', amountNumberUSD)
+
+    console.log('Exchange Rate', exchangeRate)
 
     if(exchangeRate && amount && currencyExchange === 'brlusd'){
         const dollars = convert.convertBrlToUsd(exchangeRate, amountNumber)
