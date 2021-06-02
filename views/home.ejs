@@ -105,7 +105,6 @@
                     await extractExchange(dropdown.selectedIndex)
                     const input = document.querySelector('#amount')
                     const simpleMask = SimpleMaskMoney.setMask(input, argsBRL)
-                    const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
                 }
                 extract()
             }
@@ -114,7 +113,6 @@
                     await extractExchange(dropdown.selectedIndex)
                     const input = document.querySelector('#amount')
                     const simpleMask = SimpleMaskMoney.setMask(input, argsUSD)
-                    const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
                 }
                 extract()
             }

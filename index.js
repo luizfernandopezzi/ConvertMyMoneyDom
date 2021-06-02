@@ -19,7 +19,9 @@ app.get('/exchange', (req,res)=>{
     const { exchangeRate, amount, currencyExchange } = req.query
     console.log(req.query)
     const amountNumber = SimpleMaskMoney.formatToNumber(amount)
+    const amountNumberUSD = amountNumber*1000
     console.log(amountNumber)
+    console.log(amountNumberUSD)
 
     if(exchangeRate && amount && currencyExchange === 'brlusd'){
         const dollars = convert.convertBrlToUsd(exchangeRate, amountNumber)
@@ -32,12 +34,12 @@ app.get('/exchange', (req,res)=>{
         })
     }
     if(exchangeRate && amount && currencyExchange === 'usdbrl'){
-        const reais = convert.convertUsdToBrl(exchangeRate, amountNumber)
+        const reais = convert.convertUsdToBrl(exchangeRate, amountNumberUSD)
         res.render('exchange', {
             error: false,
             currencyExchange: 'usdbrl',
             exchangeRate: convert.toMoney(exchangeRate), 
-            amount: convert.toCurrency("en-US","USD",amountNumber),
+            amount: convert.toCurrency("en-US","USD",amountNumberUSD),
             reais: convert.toCurrency("pt-BR","BRL",reais)
         })
     }
