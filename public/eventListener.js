@@ -80,6 +80,15 @@ const args = {
     cursor: 'end'
 }
 
+const argsUSD = {
+    prefix: '$ ',
+    fixed: true,
+    fractionDigits: 2,
+    decimalSeparator: '.',
+    thousandsSeparator: ',',
+    cursor: 'end'
+}
+
 const dropdown = document.querySelector('select')
 const eventListener = dropdown.addEventListener('change', (event)=>{
     event.preventDefault()
@@ -90,18 +99,18 @@ const eventListener = dropdown.addEventListener('change', (event)=>{
         const extract = async () => {
             await extractExchange(dropdown.selectedIndex)
             const input = document.querySelector('#amount')
-            const simpleMask = SimpleMaskMoney.setMask(input, args)
+            const simpleMask = SimpleMaskMoney.setMask(input, argsBRL)
             const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
-        }      
+        }
         extract()
     }
     if(dropdown.selectedIndex === 2){
         const extract = async () => {
             await extractExchange(dropdown.selectedIndex)
             const input = document.querySelector('#amount')
-            const simpleMask = SimpleMaskMoney.setMask(input, args)
+            const simpleMask = SimpleMaskMoney.setMask(input, argsUSD)
             const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
-        }      
+        }
         extract()
     }
 })
