@@ -2,6 +2,8 @@ const express = require('express')
 const ejs = require('ejs')
 const path = require('path')
 const convert = require('./lib/convert')
+const SimpleMaskMoney = require('simple-mask-money')
+const simpleMaskMoney = require('simple-mask-money')
 
 const app = express()
 
@@ -15,23 +17,27 @@ app.get('/', (req,res)=>{
 
 app.get('/exchange', (req,res)=>{
     const { exchangeRate, amount, currencyExchange } = req.query
+    console.log(req.query)
+    const amountNumber = SimpleMaskMoney.formatToNumber(amount)
+    console.log(amountNumber)
+
     if(exchangeRate && amount && currencyExchange === 'brlusd'){
-        const dollars = convert.convertBrlToUsd(exchangeRate, amount)
+        const dollars = convert.convertBrlToUsd(exchangeRate, amountNumber)
         res.render('exchange', {
             currencyExchange: 'brlusd',
             error: false,
             exchangeRate: convert.toMoney(exchangeRate), 
-            amount: convert.toCurrency("pt-BR","BRL",amount),
+            amount: convert.toCurrency("pt-BR","BRL",amountNumber),
             dollars: convert.toCurrency("en-US","USD",dollars)
         })
     }
     if(exchangeRate && amount && currencyExchange === 'usdbrl'){
-        const reais = convert.convertUsdToBrl(exchangeRate, amount)
+        const reais = convert.convertUsdToBrl(exchangeRate, amountNumber)
         res.render('exchange', {
             error: false,
             currencyExchange: 'usdbrl',
             exchangeRate: convert.toMoney(exchangeRate), 
-            amount: convert.toCurrency("en-US","USD",amount),
+            amount: convert.toCurrency("en-US","USD",amountNumber),
             reais: convert.toCurrency("pt-BR","BRL",reais)
         })
     }

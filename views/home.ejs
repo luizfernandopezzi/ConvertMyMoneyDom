@@ -1,19 +1,116 @@
 <%- include('header') %>
 
-<form>
-    <select id="select" name="currencyExchange">
-            <option value='' selected disabled>Select Currency</option>
-            <option value="brlusd">BRL to USD</option>
-            <option value="usdbrl">UDS to BRL</option>
-    </select>
-    <!-- <div>
-        <button type="button">Start</button>
-    </div> -->
-</form>
+    <form>
+        <select id="select" name="currencyExchange">
+                <option value='' selected disabled>Select Currency</option>
+                <option value="brlusd">BRL to USD</option>
+                <option value="usdbrl">UDS to BRL</option>
+        </select>
+        <!-- <div>
+            <button type="button">Start</button>
+        </div> -->
+    </form>
 
-<div class="exchangeFormDiv"></div>
-<script type="module" src="/eventListener.js"></script>
+    <div class="exchangeFormDiv"></div>
+
+    <%- include('footer') %>
+
+    <script src="https://github.com/codermarcos/simple-mask-money/releases/download/v3.0.0/simple-mask-money.js"></script>
+    <!-- <script src="eventListener.js"></script> -->
+    <script>
+        const getUrl = (date) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${date}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao`
+
+        const getToday = () => {
+            const today = new Date()
+            const date = (today.getMonth()+1+'-'+today.getDate()+'-'+today.getFullYear())
+            return date
+        }
+
+        async function getExchangeApiFetch(){
+            const response = await fetch(getUrl(getToday()))
+            return await response.text()
+        }
+
+        async function extractExchange(dropdownIndex,send){
+            const data = await getExchangeApiFetch()
+            const extractExc = JSON.parse(data).value[0].cotacaoVenda
+            console.log(extractExc)
+
+            const formBrlUsd = `
+            <form class="exchangeForm" method="GET" action="/exchange">
+            <div>
+                <label>Exchange Rate</label>
+                <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
+            </div>
+            <div>
+                <label>Amount</label>
+                <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="R$ 0,00">
+            </div>
+
+            <div class="button">
+                <button type="submit" name="currencyExchange" value="brlusd">Convert</button>
+            </div>
+            </form>
+            `
+            const formUsdBrl = `
+            <form class="exchangeForm" method="GET" action="/exchange">
+                <div>
+                    <label>Exchange Rate</label>
+                    <input name="exchangeRate" type="number" placeholder="BRL/USD" value="${extractExc}">
+                </div>
+                <div>
+                    <label>Amount</label>
+                    <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="USD 0.00">
+                </div>
+                <div class="button">
+                    <button type="submit" name="currencyExchange" value="usdbrl">Convert</button>
+                </div>
+            </form>
+            `
+            const exchangeForm = document.querySelector('.exchangeFormDiv')
+            if(dropdownIndex === 1){
+                exchangeForm.innerHTML = formBrlUsd
+            }
+            if(dropdownIndex === 2){
+                exchangeForm.innerHTML = formUsdBrl
+            }
+        }
+
+        const args = {
+            prefix: 'R$ ',
+            fixed: true,
+            fractionDigits: 2,
+            decimalSeparator: ',',
+            thousandsSeparator: '.',
+            cursor: 'end'
+        }
+
+        const dropdown = document.querySelector('select')
+        const eventListener = dropdown.addEventListener('change', (event)=>{
+            event.preventDefault()
+            if(dropdown.selectedIndex === 0){
+            alert("Please, select a currency!")
+            }
+            if(dropdown.selectedIndex === 1){
+                const extract = async () => {
+                    await extractExchange(dropdown.selectedIndex)
+                    const input = document.querySelector('#amount')
+                    const simpleMask = SimpleMaskMoney.setMask(input, args)
+                    const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
+                }
+                extract()
+            }
+            if(dropdown.selectedIndex === 2){
+                const extract = async () => {
+                    await extractExchange(dropdown.selectedIndex)
+                    const input = document.querySelector('#amount')
+                    const simpleMask = SimpleMaskMoney.setMask(input, args)
+                    const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
+                }
+                extract()
+            }
+        })
+    </script>
+
 </body>
-
-<%- include('footer') %>
-
+</html>

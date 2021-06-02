@@ -13,12 +13,20 @@
 //     }    
 // }
 
+const getUrl = (date) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${date}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao` 
+
+const getToday = () => {
+    const today = new Date()
+    const date = (today.getMonth()+1+'-'+today.getDate()+'-'+today.getFullYear())
+    return date
+}
+
 async function getExchangeApiFetch(){
     const response = await fetch(getUrl(getToday()))
     return await response.text()
 }
 
-async function extractExchange(dropdownIndex){
+async function extractExchange(dropdownIndex,send){
     const data = await getExchangeApiFetch()
     const extractExc = JSON.parse(data).value[0].cotacaoVenda
     console.log(extractExc)
@@ -31,7 +39,7 @@ async function extractExchange(dropdownIndex){
     </div>   
     <div>
         <label>Amount</label>
-        <input name="amount" type="number" placeholder="R$ 0,00">
+        <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="R$ 0,00">
     </div>
 
     <div class="button">
@@ -47,7 +55,7 @@ async function extractExchange(dropdownIndex){
         </div>   
         <div>
             <label>Amount</label>
-            <input name="amount" type="number" placeholder="USD 0.00">
+            <input id="amount" name="amount" type="text" inputmode="numeric" placeholder="USD 0.00">
         </div>
         <div class="button">
             <button type="submit" name="currencyExchange" value="usdbrl">Convert</button>
@@ -63,26 +71,37 @@ async function extractExchange(dropdownIndex){
     }
 }
 
-const getUrl = (date) => `https://olinda.bcb.gov.br/olinda/servico/PTAX/versao/v1/odata/CotacaoDolarDia(dataCotacao=@dataCotacao)?@dataCotacao='${date}'&$top=100&$format=json&$select=cotacaoCompra,cotacaoVenda,dataHoraCotacao` 
-
-const getToday = () => {
-    const today = new Date()
-    const date = (today.getMonth()+1+'-'+28+'-'+today.getFullYear())
-    return date
+const args = {
+    prefix: 'R$ ',
+    fixed: true,
+    fractionDigits: 2,
+    decimalSeparator: ',',
+    thousandsSeparator: '.',
+    cursor: 'end'
 }
 
 const dropdown = document.querySelector('select')
-// const btn = document.querySelector('button')
 const eventListener = dropdown.addEventListener('change', (event)=>{
     event.preventDefault()
     if(dropdown.selectedIndex === 0){
     alert("Please, select a currency!")
     }
     if(dropdown.selectedIndex === 1){
-        //getExchangeApi(formBrlUsd)
-        extractExchange(dropdown.selectedIndex)
+        const extract = async () => {
+            await extractExchange(dropdown.selectedIndex)
+            const input = document.querySelector('#amount')
+            const simpleMask = SimpleMaskMoney.setMask(input, args)
+            const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
+        }      
+        extract()
     }
     if(dropdown.selectedIndex === 2){
-        extractExchange(dropdown.selectedIndex)
+        const extract = async () => {
+            await extractExchange(dropdown.selectedIndex)
+            const input = document.querySelector('#amount')
+            const simpleMask = SimpleMaskMoney.setMask(input, args)
+            const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
+        }      
+        extract()
     }
 })
