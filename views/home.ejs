@@ -76,12 +76,21 @@
             }
         }
 
-        const args = {
+        const argsBRL = {
             prefix: 'R$ ',
             fixed: true,
             fractionDigits: 2,
             decimalSeparator: ',',
             thousandsSeparator: '.',
+            cursor: 'end'
+        }
+
+        const argsUSD = {
+            prefix: '$ ',
+            fixed: true,
+            fractionDigits: 2,
+            decimalSeparator: '.',
+            thousandsSeparator: ',',
             cursor: 'end'
         }
 
@@ -95,7 +104,7 @@
                 const extract = async () => {
                     await extractExchange(dropdown.selectedIndex)
                     const input = document.querySelector('#amount')
-                    const simpleMask = SimpleMaskMoney.setMask(input, args)
+                    const simpleMask = SimpleMaskMoney.setMask(input, argsBRL)
                     const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
                 }
                 extract()
@@ -104,7 +113,7 @@
                 const extract = async () => {
                     await extractExchange(dropdown.selectedIndex)
                     const input = document.querySelector('#amount')
-                    const simpleMask = SimpleMaskMoney.setMask(input, args)
+                    const simpleMask = SimpleMaskMoney.setMask(input, argsUSD)
                     const simpleMaskNumber = SimpleMaskMoney.formatToNumber(input.value)
                 }
                 extract()
